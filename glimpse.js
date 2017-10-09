@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const program = require("commander");
+var argv = require('yargs').argv;
 const promise = require("bluebird");
 const path = require("path");
 const fs = require("fs");
@@ -20,106 +20,97 @@ var caseSensitive = false;
 //
 // });
 
-let getAllFilesInDir = () => {
+let getAllFilesInDir = new Promise((resolve, reject) => {
 	var files = [];
 	console.log("hello " + folder);
 	exec(`find ${folder}`)
 		.then((stdout, stderr) => {
-			if (err) reject(err);
-			console.log("Bend the knee " + folder);
-			fs.writeFile("files.txt", stdout, err => {
-				if (err) reject(err);
-
-				var lr = new LineByLineReader("files.txt");
-
-				lr.on("error", err => {
-					console.log("err", err);
-				});
-
-				lr.on("line", line => {
-					console.log(line);
-					if (line.includes(folder)) {
-						fs.lstat(getAbsolutePath(line), (err, stats) => {
-							if (stats.isFile()) {
-								files.push(getAbsolutePath(line));
-								console.log("Www");
-							}
-						});
-					} else {
-						console.log("Ffd");
-					}
-				});
-
-				lr.on("end", () => {
-
-				});
+			var files = [];
+			var fileList = stdout.split("\n");
+			fileList.forEach(fileEntry => {
+				fileEntry = path.normalize(fileEntry);
+				if (fileEntry.includes(folder)) {
+					fs.stat(getAbsolutePath(fileEntry), (err, stats) => {
+						if (stats.isFile()) {
+							files.push(getAbsolutePath(fileEntry));
+							console.log("Www");
+						}
+					});
+				} else {
+					console.log("Ffd");
+				}
 			});
+			resolve(files);
 		}).catch(err => {
 			console.error(err);
 		});
-}
+});
 
-getAllFilesInDir = promise.promisify(getAllFilesInDir);
+// program
+// 	.version('1.0.1')
+// 	.description("A command that allows you to look inside code.")
+// 	.arguments("<keyword>")
+// 	.option("-f, --folder [folder]", "Folder to search")
+// 	.option("-F, --file [file]", "File to search")
+// 	.option("-e, --excludefolder [excludedfolder]", "Exclude a folder in the search")
+// 	.option("-E, --excludefile [excludedfile]", "Exclude a file in the search")
+// 	.option("-c, --casesensitive", "Whether to search for the keyword casesensitively, default false")
+// 	.action((keywordd) => {
+// 		if (keywordd) {
+// 			keyword = keywordd;
+// 		} else {
+// 			return console.log("Please input a keyword");
+// 		}
+// 	})
+// 	.parse(process.argv);
 
-program
-	.version('1.0.1')
-	.description("A command that allows you to look inside code.")
-	.arguments("<keyword>")
-	.option("-f, --folder [folder]", "Folder to search")
-	.option("-F, --file [file]", "File to search")
-	.option("-e, --excludefolder [excludedfolder]", "Exclude a folder in the search")
-	.option("-E, --excludefile [excludedfile]", "Exclude a file in the search")
-	.option("-c, --casesensitive", "Whether to search for the keyword casesensitively, default false")
-	.action((keywordd) => {
-		if (keywordd) {
-			keyword = keywordd;
-		} else {
-			return console.log("Please input a keyword");
-		}
-	})
-	.parse(process.argv);
+// if (!program.args.length) {
+// 	program.help();
+// } else {
+// 	if (program.casesensitive) {
+// 		caseSensitive = true;
+// 	}
 
-if (!program.args.length) {
-	program.help();
-} else {
-	if (program.casesensitive) {
-		caseSensitive = true;
-	}
+// 	if (program.folder) {
+// 		if (!program.folder) {
+// 			folder = ".";
+// 		} else {
+// 			folder = getAbsolutePath(program.folder);
+// 			console.log(folder);
+// 			if (folder.includes(" ")) {
+// 				folder = '"' + folder + '"';
+// 				console.log(folder);
+// 			}
 
-	if (program.folder) {
-		if (!program.folder) {
-			folder = ".";
-		} else {
-			folder = getAbsolutePath(program.folder);
-		}
-	}
+// 			console.log(folder);
+// 		}
+// 	}
 
-	if (program.file) {
-		file = getAbsolutePath(program.file);
-	}
+// 	if (program.file) {
+// 		file = getAbsolutePath(program.file);
+// 	}
 
-	if (program.excludefolder) {
-		excludedFolder = getAbsolutePath(program.excludefolder);
-	}
+// 	if (program.excludefolder) {
+// 		excludedFolder = getAbsolutePath(program.excludefolder);
+// 	}
 
-	if (program.excludefile) {
-		excludedFile = getAbsolutePath(program.excludefile);
-	}
+// 	if (program.excludefile) {
+// 		excludedFile = getAbsolutePath(program.excludefile);
+// 	}
 
-	if (folder) {
-		if (excludedFolder) {
+// 	if (folder) {
+// 		if (excludedFolder) {
 
-		} else {
-			main();
-		}
-	}
+// 		} else {
+// 			main();
+// 		}
+// 	}
 
-	if (file) {
+// 	if (file) {
 
-	}
+// 	}
 
-}
-
+// }
 
 
 function getAbsolutePath(inp) {
@@ -131,8 +122,7 @@ function getAbsolutePath(inp) {
 }
 
 function main() {
-	getAllFilesInDir().then(fileList => {
-		console.log("Call you Jon Snow");
+	getAllFilesInDir.then(fileList => {
 		fileList.forEach(file => {
 			var lr = new LineByLineReader(file);
 			var lineNumber = 1;
