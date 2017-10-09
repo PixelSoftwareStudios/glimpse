@@ -1,6 +1,6 @@
 {
   "name": "glimpse",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "glimpse.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "bluebird": "^3.5.0",
     "chalk": "^2.1.0",
     "commander": "^2.11.0",
-    "line-by-line": "^0.1.5"
+    "line-by-line": "^0.1.5",
+    "yargs": "^9.0.1"
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var argv = require('yargs').argv;
+const program = require("commander");
 const promise = require("bluebird");
 const path = require("path");
 const fs = require("fs");
@@ -15,10 +15,6 @@ var file;
 var excludedFile;
 var list = [];
 var caseSensitive = false;
-
-// var iterateOverFiles = new Promise(function(resolve, reject) {
-//
-// });
 
 let getAllFilesInDir = new Promise((resolve, reject) => {
 	var files = [];
@@ -46,71 +42,71 @@ let getAllFilesInDir = new Promise((resolve, reject) => {
 		});
 });
 
-// program
-// 	.version('1.0.1')
-// 	.description("A command that allows you to look inside code.")
-// 	.arguments("<keyword>")
-// 	.option("-f, --folder [folder]", "Folder to search")
-// 	.option("-F, --file [file]", "File to search")
-// 	.option("-e, --excludefolder [excludedfolder]", "Exclude a folder in the search")
-// 	.option("-E, --excludefile [excludedfile]", "Exclude a file in the search")
-// 	.option("-c, --casesensitive", "Whether to search for the keyword casesensitively, default false")
-// 	.action((keywordd) => {
-// 		if (keywordd) {
-// 			keyword = keywordd;
-// 		} else {
-// 			return console.log("Please input a keyword");
-// 		}
-// 	})
-// 	.parse(process.argv);
+program
+	.version('1.0.2')
+	.description("A command that allows you to look inside code.")
+	.arguments("<keyword>")
+	.option("-f, --folder [folder]", "Folder to search")
+	.option("-F, --file [file]", "File to search")
+	.option("-e, --excludefolder [excludedfolder]", "Exclude a folder in the search")
+	.option("-E, --excludefile [excludedfile]", "Exclude a file in the search")
+	.option("-c, --casesensitive", "Whether to search for the keyword casesensitively, default false")
+	.action((keywordd) => {
+		if (keywordd) {
+			keyword = keywordd;
+		} else {
+			return console.log("Please input a keyword");
+		}
+	})
+	.parse(process.argv);
 
-// if (!program.args.length) {
-// 	program.help();
-// } else {
-// 	if (program.casesensitive) {
-// 		caseSensitive = true;
-// 	}
+if (!program.args.length) {
+	program.help();
+} else {
+	if (program.casesensitive) {
+		caseSensitive = true;
+	}
 
-// 	if (program.folder) {
-// 		if (!program.folder) {
-// 			folder = ".";
-// 		} else {
-// 			folder = getAbsolutePath(program.folder);
-// 			console.log(folder);
-// 			if (folder.includes(" ")) {
-// 				folder = '"' + folder + '"';
-// 				console.log(folder);
-// 			}
+	if (program.folder) {
+		if (!program.folder) {
+			folder = ".";
+		} else {
+			folder = getAbsolutePath(program.folder);
+			console.log(folder);
+			if (folder.includes(" ")) {
+				folder = '"' + folder + '"';
+				console.log(folder);
+			}
 
-// 			console.log(folder);
-// 		}
-// 	}
+			console.log(folder);
+		}
+	}
 
-// 	if (program.file) {
-// 		file = getAbsolutePath(program.file);
-// 	}
+	if (program.file) {
+		file = getAbsolutePath(program.file);
+	}
 
-// 	if (program.excludefolder) {
-// 		excludedFolder = getAbsolutePath(program.excludefolder);
-// 	}
+	if (program.excludefolder) {
+		excludedFolder = getAbsolutePath(program.excludefolder);
+	}
 
-// 	if (program.excludefile) {
-// 		excludedFile = getAbsolutePath(program.excludefile);
-// 	}
+	if (program.excludefile) {
+		excludedFile = getAbsolutePath(program.excludefile);
+	}
 
-// 	if (folder) {
-// 		if (excludedFolder) {
+	if (folder) {
+		if (excludedFolder) {
 
-// 		} else {
-// 			main();
-// 		}
-// 	}
+		} else {
+			main();
+		}
+	}
 
-// 	if (file) {
+	if (file) {
 
-// 	}
+	}
 
-// }
+}
 
 
 function getAbsolutePath(inp) {
